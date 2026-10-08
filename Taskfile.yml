@@ -1,0 +1,40 @@
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+
+version: '3'
+
+vars:
+  CODE: application/ adapters/ domain/ infra/ presentation/ 
+
+tasks:
+  test:
+    desc: Running tests
+    cmds:
+      - pytest -p no:cacheprovider
+    silent: true
+
+  "format":
+    desc: Formatting code
+    cmds:
+      - echo "Start formating..."
+      - ruff format {{.CODE}}
+      - ruff check --fix {{.CODE}}
+    silent: true
+
+  "lint:mypy":
+    desc: Linting code with mypy
+    cmds:
+      - echo "Linting code with mypy"
+      - mypy {{.CODE}}
+    silent: true
+
+  "lint:ruff":
+    desc: Linting code with ruff
+    cmds:
+      - echo "Linting code with ruff"
+      - ruff check {{.CODE}}
+    silent: true
+
+  check:
+    deps: ["lint:mypy", "lint:ruff", "format"]
+    desc: Linting code
+    silent: true

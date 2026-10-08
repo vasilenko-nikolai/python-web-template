@@ -1,0 +1,20 @@
+[project]
+name = "my-workout"
+version = "0.1.0"
+description = "App for track my workout"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "alembic>=1.20.0",
+    "fastapi>=0.143.0",
+    "orjson>=3.13.0",
+    "psycopg[binary]>=3.2",
+    "sqlalchemy>=2.1.4",
+]
+
+[dependency-groups]
+dev = [
+    "mypy>=2.4.0",
+    "pytest>=9.1.1",
+    "ruff>=0.16.10",
+]

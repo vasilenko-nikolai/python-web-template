@@ -1,0 +1,48 @@
+# Compose-конфигурация только для локальных проверок и CI, не для production.
+x-check: &check
+  build:
+    context: .
+    dockerfile: docker/dev/Dockerfile
+  working_dir: /workspace
+  # По умолчанию соответствует первому локальному пользователю и не оставляет
+  # root-owned файлы после форматирования. Значения можно переопределить.
+  user: "${LOCAL_UID:-1000}:${LOCAL_GID:-1000}"
+  volumes:
+    - .:/workspace
+  environment:
+    MYPY_CACHE_DIR: /tmp/mypy-cache
+    RUFF_CACHE_DIR: /tmp/ruff-cache
+
+services:
+  postgres:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_DB: mydb
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+    ports:
+      - "5432:5432"
+    volumes:
+      # Для PostgreSQL 18 официальный образ хранит версионный PGDATA внутри
+      # /var/lib/postgresql, поэтому volume подключается на уровень выше.
+      - postgres-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U test -d test"]
+      interval: 2s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+
+  dev:
+    <<: *check
+    command: ["pytest", "-p", "no:cacheprovider"]
+    environment:
+      MYPY_CACHE_DIR: /tmp/mypy-cache
+      RUFF_CACHE_DIR: /tmp/ruff-cache
+    env_file: ".env"
+    depends_on:
+      postgres:
+        condition: service_healthy
+        
+volumes:
+  postgres-data:
