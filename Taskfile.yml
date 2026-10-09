@@ -35,6 +35,24 @@ tasks:
     silent: true
 
   check:
-    deps: ["lint:mypy", "lint:ruff", "format"]
     desc: Linting code
+    silent: true
+    cmds:
+      - task lint:mypy
+      - task lint:ruff
+      - task format
+      - task test
+
+  "generate:migration":
+    desc: Generate new migration file
+    cmds:
+      - echo "Generating new migration"
+      - alembic revision --autogenerate {{.CLI_ARGS}}
+    silent: true
+
+  "migration:up":
+    desc: Run all migrations
+    cmds:
+      - echo "Run migrations..."
+      - alembic upgrade head
     silent: true

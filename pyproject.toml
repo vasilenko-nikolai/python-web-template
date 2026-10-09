@@ -6,9 +6,12 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "alembic>=1.20.0",
+    "asyncpg>=0.32.0",
     "fastapi>=0.143.0",
     "orjson>=3.13.0",
+    "psycopg2-binary>=2.9.13",
     "psycopg[binary]>=3.2",
+    "pydantic-settings>=2.15.0",
     "sqlalchemy>=2.1.4",
 ]
 
@@ -18,3 +21,9 @@ dev = [
     "pytest>=9.1.1",
     "ruff>=0.16.10",
 ]
+
+
+[tool.basedpyright]
+reportUninitializedInstanceVariable = false
+reportUnannotatedClassAttribute = false
+ignore = ["alembic/*"]
